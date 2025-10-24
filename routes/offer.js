@@ -16,7 +16,7 @@ router.get(
   requireAdmin,
   offerController.getOfferById
 );
-router.put("/:id", authenticate, requireAdmin, offerController.updateOffer);
+router.patch("/:id", authenticate, requireAdmin, offerController.updateOffer);
 router.delete("/:id", authenticate, requireAdmin, offerController.deleteOffer);
 
 module.exports = router;

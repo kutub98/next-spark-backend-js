@@ -2,8 +2,10 @@ const Offer = require("../models/Offer");
 
 // Create Offer
 const createOffer = async (req, res) => {
+  console.log(req.body, "request body");
   try {
     const offer = await Offer.create(req.body);
+    console.log("Offer created:", offer);
     res.status(201).json({
       success: true,
       message: "Offer created successfully",

@@ -117,7 +117,7 @@ const register = async (req, res) => {
         ? [preferredSubjects]
         : [],
       futureGoals,
-      password: hashedPassword,
+      password,
       profileImage: profileImagePath,
       role: "student",
     });

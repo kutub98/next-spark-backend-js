@@ -26,7 +26,7 @@ router.get(
   requireAdmin,
   timeInstructionController.getTimeInstructionById
 );
-router.put(
+router.patch(
   "/:id",
   authenticate,
   requireAdmin,

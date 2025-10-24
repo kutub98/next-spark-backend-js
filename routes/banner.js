@@ -16,7 +16,7 @@ router.get(
   requireAdmin,
   bannerController.getBannerById
 );
-router.put("/:id", authenticate, requireAdmin, bannerController.updateBanner);
+router.patch("/:id", authenticate, requireAdmin, bannerController.updateBanner);
 router.delete(
   "/:id",
   authenticate,

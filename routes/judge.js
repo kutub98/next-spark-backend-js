@@ -11,7 +11,7 @@ router.get("/panel/:panel", judgeController.getJudgePanelByPanel);
 
 // Protected routes
 router.post("/", authenticate, requireAdmin, judgeController.createJudgePanel);
-router.put(
+router.patch(
   "/:id",
   authenticate,
   requireAdmin,

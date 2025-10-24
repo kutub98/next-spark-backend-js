@@ -10,6 +10,8 @@ const createQuiz = async (req, res) => {
       createdBy: req.user.userId,
     };
 
+    console.log("Creating quiz with data:", quizData);
+
     const quiz = await Quiz.create(quizData);
     res.status(201).json({
       success: true,
