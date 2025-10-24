@@ -10,9 +10,9 @@ router.get("/quiz/:quizId", participationController.getParticipationsByQuiz);
 router.post("/check", participationController.checkParticipation);
 router.get("/:id", participationController.getParticipationById);
 
-// Protected routes
 router.post("/", authenticate, participationController.createParticipation);
 router.put("/:id", authenticate, participationController.updateParticipation);
+router.patch("/:id", authenticate, participationController.updateParticipation);
 router.delete(
   "/:id",
   authenticate,

@@ -13,7 +13,7 @@ const quizSchema = new mongoose.Schema(
     },
     instructions: {
       type: String,
-      required: [true, "Quiz instructions are required"],
+      trim: true,
     },
 
     // Time settings
@@ -37,6 +37,14 @@ const quizSchema = new mongoose.Schema(
     },
 
     // Scoring
+    totalMarks: {
+      type: Number,
+      min: [0, "Total marks cannot be less than 0"],
+    },
+    passingMarks: {
+      type: Number,
+      min: [0, "Passing marks cannot be less than 0"],
+    },
     marksPerQuestion: {
       type: Number,
       default: 1,
@@ -71,6 +79,10 @@ const quizSchema = new mongoose.Schema(
     },
 
     // Access control
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
     isPublic: {
       type: Boolean,
       default: true,
@@ -138,17 +150,16 @@ const quizSchema = new mongoose.Schema(
 quizSchema.index({ createdBy: 1 });
 quizSchema.index({ status: 1 });
 quizSchema.index({ startTime: 1, endTime: 1 });
+quizSchema.index({ isActive: 1 });
 
-// Virtual for total marks
-quizSchema.virtual("totalMarks").get(function () {
-  return this.totalQuestions * this.marksPerQuestion;
-});
-
-// Check if quiz is active
-quizSchema.methods.isActive = function () {
+// Check if quiz time is active
+quizSchema.methods.isTimeActive = function () {
   const now = new Date();
   return (
-    this.status === "published" && now >= this.startTime && now <= this.endTime
+    this.isActive &&
+    this.status === "published" &&
+    now >= this.startTime &&
+    now <= this.endTime
   );
 };
 

@@ -231,7 +231,8 @@ const getQuizStats = async (req, res) => {
       duration: quiz.duration,
       totalMarks: quiz.totalMarks,
       status: quiz.status,
-      isActive: quiz.isActive(),
+      isActive: quiz.isActive,
+      isTimeActive: quiz.isTimeActive(),
       hasStarted: quiz.hasStarted(),
       hasEnded: quiz.hasEnded(),
     };

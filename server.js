@@ -126,7 +126,7 @@ app.get("/", (req, res) => {
       health: "/health",
       api: "/api",
       auth: "/api/auth",
-    }
+    },
   });
 });
 

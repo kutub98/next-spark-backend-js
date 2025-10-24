@@ -368,10 +368,20 @@ const bulkCreateQuestions = async (req, res) => {
       });
     }
 
+    // Get createdBy from authenticated user
+    const createdBy = req.user?.userId;
+    if (!createdBy) {
+      return res.status(401).json({
+        success: false,
+        message: "User authentication required",
+      });
+    }
+
     // Transform all questions from frontend to backend format
-    const transformedQuestions = questions.map((q) =>
-      transformFrontendToBackend(q)
-    );
+    const transformedQuestions = questions.map((q) => ({
+      ...transformFrontendToBackend(q),
+      createdBy, // Add createdBy to each question
+    }));
 
     // Validate each question
     const validatedQuestions = transformedQuestions.map((question, index) => {
@@ -504,7 +514,7 @@ const bulkDeleteQuestions = async (req, res) => {
       _id: { $in: validIds },
     });
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: `${result.deletedCount} questions deleted successfully`,
       data: {
