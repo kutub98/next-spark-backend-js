@@ -83,7 +83,7 @@ const participationSchema = new mongoose.Schema(
     // Status
     status: {
       type: String,
-      enum: ["in-progress", "completed", "abandoned", "timeout"],
+      enum: ["in-progress", "completed", "pending", "abandoned", "timeout"],
       default: "in-progress",
     },
 

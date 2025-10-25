@@ -153,7 +153,7 @@ app.get("/api", (req, res) => {
       quizzes: "/api/quizzes",
       questions: "/api/questions",
       events: "/api/events",
-      participation: "/api/participation",
+      participations: "/api/participations",
       banner: "/api/banner",
       offers: "/api/offers",
       judge: "/api/judge",
@@ -177,7 +177,7 @@ app.get("/api/v1", (req, res) => {
       quizzes: "/api/v1/quizzes",
       questions: "/api/v1/questions",
       events: "/api/v1/events",
-      participation: "/api/v1/participation",
+      participations: "/api/v1/participations",
       banner: "/api/v1/banner",
       offers: "/api/v1/offers",
       judge: "/api/v1/judge",
@@ -195,7 +195,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/quizzes", quizRoutes);
 app.use("/api/v1/questions", questionRoutes);
 app.use("/api/v1/events", eventRoutes);
-app.use("/api/v1/participation", participationRoutes);
+app.use("/api/v1/participations", participationRoutes);
 app.use("/api/v1/banner", bannerRoutes);
 app.use("/api/v1/offers", offerRoutes);
 app.use("/api/v1/judge", judgeRoutes);
@@ -209,7 +209,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/events", eventRoutes);
-app.use("/api/participation", participationRoutes);
+app.use("/api/participations", participationRoutes);
 app.use("/api/banner", bannerRoutes);
 app.use("/api/offers", offerRoutes);
 app.use("/api/judge", judgeRoutes);
