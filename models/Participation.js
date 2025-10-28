@@ -136,6 +136,14 @@ participationSchema.index({ quiz: 1, status: 1 });
 participationSchema.index({ user: 1, status: 1 });
 participationSchema.index({ obtainedMarks: -1 }); // For ranking
 
+participationSchema.pre(/^find/, function (next) {
+  this.populate("user", "fullNameEnglish fullNameBangla contact role").populate(
+    "quiz",
+    "title description duration totalQuestions eventId text"
+  );
+  next();
+});
+
 // Virtual for accuracy percentage
 participationSchema.virtual("accuracyPercentage").get(function () {
   if (this.attemptedQuestions === 0) return 0;
