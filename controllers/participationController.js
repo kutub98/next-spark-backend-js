@@ -238,21 +238,54 @@ const getParticipationById = catchAsync(async (req, res) => {
 });
 
 // Update Participation
+// const updateParticipation = catchAsync(async (req, res) => {
+//   const { id } = req.params;
+//   const updateData = req.body;
+
+//   const participation = await Participation.findByIdAndUpdate(id, updateData, {
+//     new: true,
+//     runValidators: true,
+//   });
+
+//   if (!participation) {
+//     return res.status(404).json({
+//       success: false,
+//       message: "Participation not found",
+//     });
+//   }
+
+//   res.json({
+//     success: true,
+//     message: "Participation updated successfully",
+//     data: participation,
+//   });
+// });
+
 const updateParticipation = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const updateData = req.body;
+  const { answers, obtainedMarks } = req.body;
 
-  const participation = await Participation.findByIdAndUpdate(id, updateData, {
-    new: true,
-    runValidators: true,
-  });
-
+  // Find existing participation and populate quiz for passingMarks
+  const participation = await Participation.findById(id).populate("quiz");
   if (!participation) {
     return res.status(404).json({
       success: false,
       message: "Participation not found",
     });
   }
+
+  // Update answers and obtainedMarks
+  if (answers) participation.answers = answers;
+  if (typeof obtainedMarks === "number")
+    participation.obtainedMarks = obtainedMarks;
+
+  // Compute status based on passing marks
+  const passingMarks = participation.quiz?.passingMarks || 0;
+  participation.status =
+    participation.obtainedMarks >= passingMarks ? "completed" : "failed";
+
+  // Save the updated participation
+  await participation.save();
 
   res.json({
     success: true,
