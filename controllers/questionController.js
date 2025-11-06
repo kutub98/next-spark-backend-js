@@ -84,6 +84,10 @@ const transformBackendToFrontend = (data) => {
     transformed.questionType = mapQuestionTypeToFrontend(transformed.type);
     delete transformed.type;
   }
+  // question images
+  if (transformed.questionImage) {
+    transformed.questionImage = `${baseUrl}${transformed.questionImage}`;
+  }
 
   // For MCQ questions, extract options as strings if needed
   if (transformed.options && Array.isArray(transformed.options)) {
@@ -103,6 +107,9 @@ const createQuestion = async (req, res) => {
   try {
     // Transform frontend data to backend format
     const questionData = transformFrontendToBackend(req.body);
+    if (req.file) {
+      questionData.questionImage = `/uploads/questions/${req.file.filename}`;
+    }
 
     // Add createdBy from authenticated user
     if (req.user && req.user.userId) {
@@ -163,7 +170,10 @@ const getQuestions = async (req, res) => {
     const questions = await query.sort({ order: 1, createdAt: -1 });
 
     // Transform all questions to frontend format
-    const transformedQuestions = questions.map(transformBackendToFrontend);
+    // const transformedQuestions = questions.map(transformBackendToFrontend);
+    const transformedQuestions = questions.map((q) =>
+      transformBackendToFrontend(q, req)
+    );
 
     res.json({
       success: true,
@@ -300,7 +310,10 @@ const getQuestionsByQuiz = async (req, res) => {
     const questions = await query.sort({ order: 1 });
 
     // Transform all questions to frontend format
-    const transformedQuestions = questions.map(transformBackendToFrontend);
+    // const transformedQuestions = questions.map(transformBackendToFrontend);
+    const transformedQuestions = questions.map((q) =>
+      transformBackendToFrontend(q, req)
+    );
 
     res.json({
       success: true,
@@ -339,7 +352,10 @@ const getQuestionsByType = async (req, res) => {
     const questions = await query.sort({ order: 1 });
 
     // Transform all questions to frontend format
-    const transformedQuestions = questions.map(transformBackendToFrontend);
+    // const transformedQuestions = questions.map(transformBackendToFrontend);
+    const transformedQuestions = questions.map((q) =>
+      transformBackendToFrontend(q, req)
+    );
 
     res.json({
       success: true,
@@ -557,6 +573,7 @@ const submitAnswer = async (req, res) => {
     if (isCorrect) {
       question.correctAttempts += 1;
     }
+    question.questionImage = `/uploads/questions/${req.file.filename}`;
     await question.save();
 
     res.json({

@@ -10,7 +10,7 @@ const questionSchema = new mongoose.Schema(
     },
     questionImage: {
       type: String, // URL to image
-      default: null,
+      // default: null,
     },
 
     // Question type

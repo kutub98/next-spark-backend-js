@@ -39,6 +39,7 @@ const participationSchema = new mongoose.Schema(
           type: String,
           trim: true,
         },
+        images: [String],
         isCorrect: {
           type: Boolean,
           default: false,
