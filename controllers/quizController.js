@@ -51,7 +51,10 @@ const getQuizzes = async (req, res) => {
 
     // Populate eventId if requested
     if (populate === "eventId") {
-      query = query.populate("eventId", "title description startDate endDate");
+      query = query.populate(
+        "eventId",
+        "title description startDate endDate passingMarks"
+      );
     }
 
     const quizzes = await query.sort({ createdAt: -1 });

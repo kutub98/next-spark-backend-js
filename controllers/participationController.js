@@ -296,7 +296,7 @@ const getParticipations = catchAsync(async (req, res) => {
     if (fields.includes("quiz"))
       query = query.populate(
         "quiz",
-        "title description duration totalQuestions eventId"
+        "title description duration totalQuestions eventId passingMarks"
       );
   }
 
@@ -386,7 +386,7 @@ const getParticipationsByQuiz = catchAsync(async (req, res) => {
   let query = Participation.find({ quiz: quizId });
   if (status) query = query.where({ status });
   if (populate?.includes("user"))
-    query = query.populate("user", "fullNameEnglish fullNameBangla contact");
+    query = query.populate("user", "fullNameEnglish fullNameBangla contact ");
 
   const participations = await query.sort({ obtainedMarks: -1 });
   res.json({
@@ -624,22 +624,68 @@ const completeParticipation = catchAsync(async (req, res) => {
   });
 });
 
+// const getLeaderboard = catchAsync(async (req, res) => {
+//   const { quizId } = req.params;
+//   const { limit = 50 } = req.query; // allow ?limit=10, etc.
+
+//   // Ensure ranks are up-to-date before returning
+//   await updateQuizRanking(quizId);
+
+//   const participations = await Participation.find({ quiz: quizId })
+//     .populate({
+//       path: "quiz",
+//       select:
+//         "title description duration totalQuestions totalMarks passingMarks",
+//       options: { lean: true },
+//     })
+//     .populate("user", "fullNameEnglish fullNameBangla contact role")
+//     .sort({ obtainedMarks: -1, timeSpent: 1 })
+//     .limit(Number(limit));
+
+//   console.log('passing mark', participations.map((p) => p.quiz));
+
+//   res.status(200).json({
+//     success: true,
+//     message: "Leaderboard fetched successfully",
+//     data: participations,
+//   });
+// });
+
 const getLeaderboard = catchAsync(async (req, res) => {
   const { quizId } = req.params;
   const { limit = 50 } = req.query; // allow ?limit=10, etc.
 
+  if (!quizId) {
+    return res.status(400).json({
+      success: false,
+      message: "Quiz ID is required",
+    });
+  }
+
   // Ensure ranks are up-to-date before returning
   await updateQuizRanking(quizId);
 
+  // Fetch participations with populated user and quiz fields
   const participations = await Participation.find({ quiz: quizId })
     .populate("user", "fullNameEnglish fullNameBangla contact role")
-    .sort({ obtainedMarks: -1, timeSpent: 1 }) // Sort again if necessary
+    .populate({
+      path: "quiz",
+      select:
+        "title description duration totalQuestions totalMarks passingMarks eventId", // explicitly include passingMarks
+    })
+    .sort({ obtainedMarks: -1, timeSpent: 1 }) // sort by marks desc, then time asc
     .limit(Number(limit));
+
+  // If for some reason passingMarks is still undefined, fallback to 0
+  const leaderboard = participations.map((p) => {
+    if (p.quiz && p.quiz.passingMarks === undefined) p.quiz.passingMarks = 0;
+    return p;
+  });
 
   res.status(200).json({
     success: true,
     message: "Leaderboard fetched successfully",
-    data: participations,
+    data: leaderboard,
   });
 });
 
