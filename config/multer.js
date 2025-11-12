@@ -9,7 +9,11 @@ const storage = multer.memoryStorage();
 // File filter
 const fileFilter = (req, file, cb) => {
   // Allow images for profile and question images
-  if (file.fieldname === "profileImage" || file.fieldname === "questionImage") {
+  if (
+    file.fieldname === "profileImage" ||
+    file.fieldname === "questionImage" ||
+    file.fieldname === "sponsoredImage"
+  ) {
     if (file.mimetype.startsWith("image/")) {
       cb(null, true);
     } else {
