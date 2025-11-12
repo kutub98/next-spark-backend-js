@@ -21,7 +21,6 @@ const timeInstructionRoutes = require("./routes/timeInstruction");
 const faqRoutes = require("./routes/faq");
 const messagingRoutes = require("./routes/messaging");
 const certificateRoutes = require("./routes/certificate");
-const sponsoredByRoutes = require("./routes/sponsoredByRoutes");
 
 // Import middleware
 const errorHandler = require("./middleware/errorHandler");
@@ -205,7 +204,6 @@ app.use("/api/v1/time-instruction", timeInstructionRoutes);
 app.use("/api/v1/faq", faqRoutes);
 app.use("/api/v1/messaging", messagingRoutes);
 app.use("/api/v1/certificates", certificateRoutes);
-app.use("/api/v1/sponsored-by", sponsoredByRoutes);
 
 // API routes (current version)
 app.use("/api/auth", authRoutes);
@@ -221,7 +219,8 @@ app.use("/api/time-instruction", timeInstructionRoutes);
 app.use("/api/faq", faqRoutes);
 app.use("/api/messaging", messagingRoutes);
 app.use("/api/certificates", certificateRoutes);
-app.use("/api/sponsored-by", sponsoredByRoutes);
+
+// Static files (for uploaded images)
 app.use("/uploads", express.static("uploads"));
 
 // Handle favicon.ico requests
