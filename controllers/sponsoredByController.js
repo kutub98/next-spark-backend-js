@@ -84,25 +84,77 @@ exports.getSponsors = async (req, res) => {
 };
 
 // ✅ Create sponsor
+// exports.createSponsor = async (req, res) => {
+//   try {
+//     const { name, about } = req.body;
+//     let sponsoredImage;
+
+//     if (req.file && req.file.fieldname === "sponsoredImage") {
+//       const uploadDir = path.join(__dirname, "../uploads/sponsored");
+//       if (!fs.existsSync(uploadDir))
+//         fs.mkdirSync(uploadDir, { recursive: true });
+
+//       const filename = `${Date.now()}-${req.file.originalname.replace(
+//         /\s+/g,
+//         "_"
+//       )}`;
+//       const filePath = path.join(uploadDir, filename);
+
+//       fs.writeFileSync(filePath, req.file.buffer);
+
+//       sponsoredImage = `/uploads/sponsored/${filename}`;
+//     }
+
+//     if (!sponsoredImage) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Sponsored image is required.",
+//       });
+//     }
+
+//     const sponsor = new sponsoredBy({ name, about, sponsoredImage });
+//     await sponsor.save();
+
+//     res.status(201).json({ success: true, sponsor });
+//   } catch (err) {
+//     console.error("Create Sponsor Error:", err);
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// };
+
 exports.createSponsor = async (req, res) => {
   try {
     const { name, about } = req.body;
     let sponsoredImage;
 
     if (req.file && req.file.fieldname === "sponsoredImage") {
-      const uploadDir = path.join(__dirname, "../uploads/sponsored");
-      if (!fs.existsSync(uploadDir))
-        fs.mkdirSync(uploadDir, { recursive: true });
+      const filename =
+        req.file.filename ||
+        `sponsored-${Date.now()}-${Math.round(
+          Math.random() * 1e9
+        )}${path.extname(req.file.originalname || ".jpg")}`;
 
-      const filename = `${Date.now()}-${req.file.originalname.replace(
-        /\s+/g,
-        "_"
-      )}`;
-      const filePath = path.join(uploadDir, filename);
+      // 🟢 Detect environment
+      const isServerless = process.env.VERCEL || process.env.AWS_REGION;
 
-      fs.writeFileSync(filePath, req.file.buffer);
+      if (!isServerless) {
+        // ✅ Local environment — save file to /uploads/sponsored
+        const uploadDir = path.join(__dirname, "../uploads/sponsored");
+        if (!fs.existsSync(uploadDir))
+          fs.mkdirSync(uploadDir, { recursive: true });
 
-      sponsoredImage = `/uploads/sponsored/${filename}`;
+        const filePath = path.join(uploadDir, filename);
+        fs.writeFileSync(filePath, req.file.buffer);
+
+        sponsoredImage = `/uploads/sponsored/${filename}`;
+      } else {
+        // 🚫 Serverless (Vercel/AWS) — can’t write to disk
+        // Instead, just simulate path or later replace this with Cloudinary/S3 upload
+        sponsoredImage = `/uploads/sponsored/${filename}`;
+        console.warn(
+          "⚠️ Running in serverless environment — skipping file save."
+        );
+      }
     }
 
     if (!sponsoredImage) {
