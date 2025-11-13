@@ -225,6 +225,7 @@ app.use("/api/sponsored-by", sponsoredByRoutes);
 
 // Static files (for uploaded images)
 app.use("/uploads", express.static("uploads"));
+// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Handle favicon.ico requests
 app.get("/favicon.ico", (req, res) => {
