@@ -6,6 +6,7 @@ const compression = require("compression");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 require("dotenv").config();
+const path = require("path");
 
 // Import routes
 const authRoutes = require("./routes/auth");
@@ -56,6 +57,8 @@ app.use(
 // Body parsing middleware
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Logging middleware
 if (process.env.NODE_ENV === "development") {
@@ -224,8 +227,8 @@ app.use("/api/certificates", certificateRoutes);
 app.use("/api/sponsored-by", sponsoredByRoutes);
 
 // Static files (for uploaded images)
-app.use("/uploads", express.static("uploads"));
-// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Handle favicon.ico requests
 app.get("/favicon.ico", (req, res) => {
@@ -275,6 +278,13 @@ if (process.env.VERCEL !== "1") {
 
   startServer();
 }
+
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    credentials: true,
+  })
+);
 
 // Export for Vercel serverless
 module.exports = app;
