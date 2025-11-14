@@ -445,7 +445,11 @@ const changePassword = async (req, res) => {
 // Get All Users for Admin
 const getAllUsersForAdmin = async (req, res) => {
   try {
-    const users = await User.find({ role: "student" })
+    const users = await User.find({
+      role: {
+        $in: ["student", "volunteer", "representative", "admin", "recognition"],
+      },
+    })
       .select("-password -tokens")
       .sort({ createdAt: -1 });
 
@@ -535,6 +539,72 @@ const getUserDetailsWithParticipations = async (req, res) => {
   }
 };
 
+const registerByAdmin = async (req, res) => {
+  try {
+    const { fullNameBangla, fullNameEnglish, contact, contactType, role } =
+      req.body;
+
+    // Role validation
+    const allowedRoles = [
+      "student",
+      "volunteer",
+      "representative",
+      "admin",
+      "recognition",
+    ];
+    if (!allowedRoles.includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid role",
+      });
+    }
+
+    // Check duplicate
+    const existingUser = await User.findOne({ contact });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "এই পরিচিতি নম্বর দিয়ে একজন ব্যবহারকারী ইতিমধ্যেই আছে",
+      });
+    }
+
+    // Default password for admin-created accounts
+    const defaultPassword = "123456"; // You can also use env variable
+    const hashedPassword = await bcrypt.hash(defaultPassword, 12);
+
+    const newUser = new User({
+      fullNameBangla,
+      fullNameEnglish,
+      contact,
+      contactType,
+      role,
+      password: hashedPassword,
+      isActive: true,
+      age: 15,
+      address: "N/A",
+      grade: "N/A",
+    });
+
+    await newUser.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Admin created user successfully",
+      data: {
+        id: newUser._id,
+        contact: newUser.contact,
+        role: newUser.role,
+      },
+    });
+  } catch (error) {
+    console.error("Admin register error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -545,4 +615,5 @@ module.exports = {
   checkUserExists,
   getAllUsersForAdmin,
   getUserDetailsWithParticipations,
+  registerByAdmin,
 };

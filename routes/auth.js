@@ -94,4 +94,12 @@ router.get(
   authController.getUserDetailsWithParticipations
 );
 
+router.post(
+  "/admin/register",
+  authenticate,
+  requireRole(["admin"]),
+  upload.single("profileImage"),
+  authController.registerByAdmin
+);
+
 module.exports = router;

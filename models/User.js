@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
     // Role and Status
     role: {
       type: String,
-      enum: ["student", "admin"],
+      enum: ["student", "admin", "volunteer", "representative", "recognition"],
       default: "student",
     },
     isSuperAdmin: {
